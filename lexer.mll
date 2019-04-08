@@ -30,15 +30,20 @@ let str = "'" id "'"
 (* part 4 *)
 rule read =
   parse
-  | white    { read lexbuf }
+  | white    { read lexbuf  }
   | newline  { next_line lexbuf; read lexbuf }
   | '"'      { read_string (Buffer.create 17) lexbuf }
   | '{'      { LEFT_BRACE }
   | '}'      { RIGHT_BRACE }
   | '('      { LEFT_BRACK }
   | ')'      { RIGHT_BRACK }
+  | '['      { LEFT_MIDBRACE}
+  | ']'      { RIGHT_MIDBRACE}
+  | ':'      { COLON }
+  | ';'      { SEMICOLON }
   | ','      { COMMA }
   | '.'      { PERIOD }
+  | "->"     { SENDTO}
   | "pk" {PK}
   | "sk" {SK}
   | 'k' {K}
@@ -47,7 +52,7 @@ rule read =
   | 'h' {HASHCON}
   | "aenc" {AENC}
   | "senc" {SENC}
-  | id { IDENT (Lexing.lexeme lexbuf)}
+  | id { IDENT (Lexing.lexeme lexbuf) }
   | _ { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
   | eof      { EOF }
 
