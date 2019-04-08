@@ -1,11 +1,15 @@
 type label = string;;
 type roleName= string;;
 type identifier = string;;
+(* type identifier_list=[
+  | `Identifier of identifier
+  | `Identifier_list of identifier_list list
+];; *)
 type message = [
   | `Null
   | `Var of identifier
   | `Str of roleName
-  | `Concat of message*message
+  | `Concat of message list
   | `Aenc of message*message
   | `Senc of message*message
   | `Hash of message
@@ -25,7 +29,7 @@ open Core.Std
 let rec output_message outc = function
   | `Var id -> printf "IDENT:%s" id
   | `Str str -> printf "STR:%s" str
-  | `Concat obj -> printf "~Concat~" 
+  | `Concat arr -> print_msglist outc arr
   | `Aenc (ms1,ms2) -> printf "Aenc(%a)%a" output_message ms1 output_message ms2
   | `Senc (ms1,ms2) -> printf "Senc(%a)%a" output_message ms1 output_message ms2
   | `Hash msg -> printf "h(%a)" output_message msg
@@ -33,6 +37,14 @@ let rec output_message outc = function
   | `Sk rolename -> printf "sk(%s)" rolename
   | `K (r1,r2) -> printf "k(%s,%s)" r1 r2
   | `Null       -> output_string outc "null"
+
+and print_msglist outc arr = 
+  output_string outc "<";
+  List.iteri ~f:(fun i v ->
+  if i > 0 then
+    output_string outc " . ";
+  output_message outc v) arr;
+  output_string outc ">"
 
 (* and let output_concatmessage outc obj = function
   printf "%s\"%s\": %a" output_message value; *)
@@ -45,5 +57,5 @@ let rec output_action outc = function
 and print_actionlist outc arr = 
   List.iteri ~f:(fun i v ->
   if i > 0 then
-    output_string outc ";\n ";
-    output_action outc v) arr;
+    output_string outc "\n-------\n";
+  output_action outc v) arr;

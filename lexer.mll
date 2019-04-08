@@ -52,6 +52,7 @@ rule read =
   | 'h' {HASHCON}
   | "aenc" {AENC}
   | "senc" {SENC}
+  | "Actions:" {ACTIONS}
   | id { IDENT (Lexing.lexeme lexbuf) }
   | _ { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
   | eof      { EOF }
