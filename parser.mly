@@ -22,6 +22,7 @@
 %token COLON
 %token SEMICOLON
 %token ACTIONS
+%token GOALS
 %token EOF
 
 %start <Json.action option> prog
@@ -29,18 +30,18 @@
 %%
 (* part 1 *)
 prog:
-  | act = action; EOF { Some act }
+  | act = actions; EOF { Some act }
   | EOF       { None   } ;
 
-action:
-  | ACTIONS; actlist= actions;  { actlist };
-
 actions:
+  | ACTIONS; actlist= action;  { actlist };
+
+action:
   | LEFT_MIDBRACE; seq=IDENT; RIGHT_MIDBRACE ; r1=IDENT; SENDTO ; r2=IDENT;LEFT_BRACK;n=IDENT; RIGHT_BRACK;COLON;m=message {`Act (seq,r1,r2,n,m) };
   | LEFT_BRACE;acts = action_list; RIGHT_BRACE { `Actlist acts};
 
 action_list:
-   acts = separated_list(SEMICOLON, actions)    { acts } ;
+   acts = separated_list(SEMICOLON, action)    { acts } ;
 
 message: 
   | id=IDENT { `Var id}
