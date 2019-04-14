@@ -29,14 +29,14 @@
 %%
 (* part 1 *)
 prog:
-  | act = action; EOF { Some act }
+  | act = actions; EOF { Some act }
   | EOF       { None   } ;
 
 actions:
   | ACTIONS; actlist= action;  { actlist };
 
 action:
-  | LEFT_MIDBRACE; seq=IDENT; RIGHT_MIDBRACE ; r1=IDENT; SENDTO ; r2=IDENT;LEFT_BRACK;n=IDENT; RIGHT_BRACK;COLON;m=message {`Act (seq,r1,r2,n,m) };
+  | LEFT_MIDBRACE; seq=IDENT; RIGHT_MIDBRACE ; r1=IDENT; SENDTO ; r2=IDENT;LEFT_BRACK;n=IDENT; RIGHT_BRACK;COLON;m=message {`Act (seq,r1,r2,n,m) }
   | LEFT_BRACE;acts = action_list; RIGHT_BRACE { `Actlist acts};
 
 action_list:
