@@ -24,7 +24,7 @@
 %token ACTIONS
 %token EOF
 
-%start <Json.action option> prog
+%start <Action.action option> prog
 
 %%
 (* part 1 *)

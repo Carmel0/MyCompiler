@@ -20,7 +20,7 @@ let parse_with_error lexbuf =
 let rec parse_and_print lexbuf =
   match parse_with_error lexbuf with
   | Some value ->
-    printf "%a\n" Json.output_action value;
+    printf "%a\n" Action.output_action value;
     parse_and_print lexbuf
   | None -> ()
 
