@@ -54,6 +54,10 @@ rule read =
   | "senc" {SENC}
   | "Actions:" {ACTIONS}
   | "Goals" {GOALS}
+  | "secret of" {SECRETOF}
+  | "non-injectively agrees with" {NINJ}
+  | "injectively agrees with" {INJ}
+  | "on" {ON}
   | id { IDENT (Lexing.lexeme lexbuf) }
   | _ { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
   | eof      { EOF }

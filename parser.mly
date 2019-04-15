@@ -23,15 +23,41 @@
 %token SEMICOLON
 %token ACTIONS
 %token GOALS
+%token SECRETOF
+%token NINJ
+%token INJ
+%token ON
 %token EOF
 
-%start <Json.action option> prog
+%start <Json.pocol option> prog
 
 %%
 (* part 1 *)
 prog:
-  | act = actions; EOF { Some act }
+  | p = pocol; EOF { Some p }
   | EOF       { None   } ;
+
+pocol:
+  | g=goals;a=actions { `Pocol (g,a) }
+
+goals:
+  | GOALS; goallist=goal; { goallist };
+  
+goal:
+  | LEFT_MIDBRACE; seq=IDENT; RIGHT_MIDBRACE ; m=message; SECRETOF ; rlist=role { `Secretgoal (seq,m,rlist)}
+  | LEFT_MIDBRACE; seq=IDENT; RIGHT_MIDBRACE ; r1=IDENT;NINJ;r2=IDENT;ON; msglist=message { `Agreegoal (seq,r1,r2,msglist)};
+  | LEFT_BRACE; gols = goal_list; RIGHT_BRACE { `Goallist gols};
+
+goal_list:
+  gols = separated_list(PERIOD, goal)    { gols } ;
+
+role:
+  | id=IDENT { `RoleName id}
+  | LEFT_ANGLEBARCK;rlist=rolelist;RIGHT_ANGLEBARCK { `roleName_list  rlist}
+  ;
+
+rolelist:
+  rlist = separated_list(PERIOD, IDENT)    { rlist } ;
 
 actions:
   | ACTIONS; actlist= action;  { actlist };
