@@ -3,7 +3,7 @@ type roleName= string;;
 type identifier = string;;
 type identifier_list=[
   | `Identifier of identifier
-  | `Identifier_list of identifier_list list
+  | `Identifier_list of identifier list
 ];;
 type roleName_list=[
   | `RoleName of roleName
@@ -27,7 +27,7 @@ type action = [
   | `Null
 ];;
 type goal = [
-  | `Secretgoal of label*message*roleName_list
+  | `Secretgoal of label*message*identifier_list
   | `Agreegoal of label*roleName*roleName*message
   | `Goallist of goal list
   | `Null

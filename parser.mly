@@ -1,6 +1,7 @@
 %token <string> IDENT
 %token <string> USTR
 %token <string> STRING
+%token <Json.roleName> RNAME
 %token LEFT_BRACE
 %token RIGHT_BRACE
 %token LEFT_BRACK
@@ -37,6 +38,9 @@ prog:
   | p = pocol; EOF { Some p }
   | EOF       { None   } ;
 
+pocols:
+  
+
 pocol:
   | g=goals;a=actions { `Pocol (g,a) }
 
@@ -44,8 +48,8 @@ goals:
   | GOALS; goallist=goal; { goallist };
   
 goal:
-  | LEFT_MIDBRACE; seq=IDENT; RIGHT_MIDBRACE ; m=message; SECRETOF ; rlist=role { `Secretgoal (seq,m,rlist)}
-  | LEFT_MIDBRACE; seq=IDENT; RIGHT_MIDBRACE ; r1=IDENT;NINJ;r2=IDENT;ON; msglist=message { `Agreegoal (seq,r1,r2,msglist)};
+  | LEFT_MIDBRACE; seq=IDENT; RIGHT_MIDBRACE ; m=message; SECRETOF ; rlist=rolelist { `Secretgoal (seq,m,rlist)}
+  | LEFT_MIDBRACE; seq=IDENT; RIGHT_MIDBRACE ; r1=IDENT;NINJ;r2=IDENT;ON; msglist=message { `Agreegoal (seq,r1,r2,msglist)}
   | LEFT_BRACE; gols = goal_list; RIGHT_BRACE { `Goallist gols};
 
 goal_list:
@@ -57,13 +61,13 @@ role:
   ;
 
 rolelist:
-  rlist = separated_list(PERIOD, IDENT)    { rlist } ;
+  rlist = separated_list(PERIOD, RNAME)    { rlist } ;
 
 actions:
   | ACTIONS; actlist= action;  { actlist };
 
 action:
-  | LEFT_MIDBRACE; seq=IDENT; RIGHT_MIDBRACE ; r1=IDENT; SENDTO ; r2=IDENT;LEFT_BRACK;n=IDENT; RIGHT_BRACK;COLON;m=message {`Act (seq,r1,r2,n,m) };
+  | LEFT_MIDBRACE; seq=IDENT; RIGHT_MIDBRACE ; r1=IDENT; SENDTO ; r2=IDENT;LEFT_BRACK;n=IDENT; RIGHT_BRACK;COLON;m=message {`Act (seq,r1,r2,n,m) }
   | LEFT_BRACE;acts = action_list; RIGHT_BRACE { `Actlist acts};
 
 action_list:
