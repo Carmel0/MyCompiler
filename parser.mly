@@ -1,7 +1,6 @@
 %token <string> IDENT
 %token <string> USTR
 %token <string> STRING
-%token <Json.roleName> RNAME
 %token LEFT_BRACE
 %token RIGHT_BRACE
 %token LEFT_BRACK
@@ -33,7 +32,7 @@
 %token ON
 %token EOF
 
-%start <Json.protocols option> prog
+%start <Rawprotocol.protocols option> prog
 
 %%
 (* part 1 *)
