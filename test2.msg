@@ -1,4 +1,15 @@
+Protocol CR:
+Knowledges:{
+    A : m;
+    B : <pk(A).m>
+}
 Actions:{
 [seq1] A->B (n1) : aenc{<n.m.pk(a)>}k(a,b);
-[seq2] B->A (n2) : senc{<n.m>}pk(a)
+[seq1] A->B (n1) : aenc{<n.m.pk(a)>}k(a,b)
 }
+Goals:{
+[secrecy] m secret of <A.B>;
+[secrecy] m secret of <A.B>;
+[weakB] B non-injectively agrees with A on m
+}
+end

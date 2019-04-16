@@ -27,21 +27,30 @@ type action = [
   | `Null
 ];;
 type goal = [
-  | `Secretgoal of label*message*identifier_list
+  | `Secretgoal of label*message*roleName_list
   | `Agreegoal of label*roleName*roleName*message
   | `Goallist of goal list
   | `Null
 ];;
-type pocol =[
-  | `Pocol of goal*action
+type knowledge = [
+  | `knowledge of roleName*message
+  | `knowledge_list of knowledge list
   | `Null
 ];;
+type pocolcontext =[
+  | `Pocol of knowledge*action*goal
+  | `Null
+];;
+type protocols = [
+  | `Protocol of label*pocolcontext
+  | `Null
+]
 
 (* part 1 *)
 open Core.Std
 let rec output_role outc = function
-  | `Identifier role -> printf "role:%s" role
-  | `Identifier_list arr -> print_rolelist outc arr
+  | `RoleName role -> printf "role:%s" role
+  | `roleName_list arr -> print_rolelist outc arr
 
 and print_rolelist outc arr = 
   output_string outc "<";
@@ -77,10 +86,25 @@ let rec output_action outc = function
   | `Act (seq,r1,r2,n,m) -> printf "Seq:%s\nr1:%s\nr2:%s\nnounce:%s\nmessage:%a" seq r1 r2 n output_message m
 
 and print_actionlist outc arr = 
+  output_string outc "Actions{\n";
   List.iteri ~f:(fun i v ->
   if i > 0 then
     output_string outc "\n-------\n";
-  output_action outc v) arr
+  output_action outc v) arr;
+  output_string outc "\n}"
+
+let rec output_knowledge outc = function
+  | `Null       -> output_string outc "null"
+  | `knowledge_list arr  -> print_knowledgelist outc arr
+  | `knowledge (r,m) -> printf "r:%s\nmessage:%a" r output_message m
+
+and print_knowledgelist outc arr = 
+  output_string outc "Knowledges{\n";
+  List.iteri ~f:(fun i v ->
+  if i > 0 then
+    output_string outc "\n-------\n";
+  output_knowledge outc v) arr;
+  output_string outc "\n}"
 
 let rec output_goal outc = function
   | `Null       -> output_string outc "null"
@@ -89,11 +113,17 @@ let rec output_goal outc = function
   | `Secretgoal (seq,m,rlist) -> printf "Label:%s\nmessage:%a\nrlist:%a" seq output_message m output_role rlist
 
 and print_goallist outc arr = 
+  output_string outc "Goals{\n";
   List.iteri ~f:(fun i v ->
   if i > 0 then
     output_string outc "\n-------\n";
-  output_goal outc v) arr
+  output_goal outc v) arr;
+  output_string outc "\n}"
+
+let output_pocolcontext outc = function
+  | `Null       -> output_string outc "null"
+  | `Pocol (k,a,g)-> printf "%a\n----\n%a\n----\n%a" output_knowledge k output_action a output_goal g
 
 let output_pocol outc = function
   | `Null       -> output_string outc "null"
-  | `Pocol (g,a)-> printf "%a\n----\n%a" output_goal g output_action a
+  | `Protocol (n,p)  -> printf "Protocol %s:\n----\n%a\n END" n output_pocolcontext p

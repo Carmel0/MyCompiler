@@ -53,7 +53,10 @@ rule read =
   | "aenc" {AENC}
   | "senc" {SENC}
   | "Actions:" {ACTIONS}
-  | "Goals" {GOALS}
+  | "Goals:" {GOALS}
+  | "Knowledges:" {KNOWLEDGES}
+  | "Protocol" {PROTOCOL}
+  | "end" {END}
   | "secret of" {SECRETOF}
   | "non-injectively agrees with" {NINJ}
   | "injectively agrees with" {INJ}

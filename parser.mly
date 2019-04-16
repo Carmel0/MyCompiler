@@ -24,36 +24,49 @@
 %token SEMICOLON
 %token ACTIONS
 %token GOALS
+%token KNOWLEDGES
+%token PROTOCOL
+%token END
 %token SECRETOF
 %token NINJ
 %token INJ
 %token ON
 %token EOF
 
-%start <Json.pocol option> prog
+%start <Json.protocols option> prog
 
 %%
 (* part 1 *)
 prog:
-  | p = pocol; EOF { Some p }
+  | p = protocols; EOF { Some p }
   | EOF       { None   } ;
 
-pocols:
-  
+protocols:
+  | PROTOCOL; name=IDENT; COLON ; p=pocolcontext ; END { `Protocol (name,p)};
 
-pocol:
-  | g=goals;a=actions { `Pocol (g,a) }
+pocolcontext:
+  | k=knowledges;a=actions;g=goals{ `Pocol (k,a,g) }
+
+knowledges:
+  | KNOWLEDGES; knwlist=knowledge; { knwlist };
+
+knowledge:
+  | r=IDENT; COLON ; m=message { `knowledge (r,m) }
+  | LEFT_BRACE; knws = knowledge_list; RIGHT_BRACE { `knowledge_list knws};
+
+knowledge_list:
+  knws = separated_list(SEMICOLON, knowledge)    { knws } ;
 
 goals:
   | GOALS; goallist=goal; { goallist };
   
 goal:
-  | LEFT_MIDBRACE; seq=IDENT; RIGHT_MIDBRACE ; m=message; SECRETOF ; rlist=rolelist { `Secretgoal (seq,m,rlist)}
+  | LEFT_MIDBRACE; seq=IDENT; RIGHT_MIDBRACE ; m=message; SECRETOF ; rlist=role { `Secretgoal (seq,m,rlist)}
   | LEFT_MIDBRACE; seq=IDENT; RIGHT_MIDBRACE ; r1=IDENT;NINJ;r2=IDENT;ON; msglist=message { `Agreegoal (seq,r1,r2,msglist)}
   | LEFT_BRACE; gols = goal_list; RIGHT_BRACE { `Goallist gols};
 
 goal_list:
-  gols = separated_list(PERIOD, goal)    { gols } ;
+  gols = separated_list(SEMICOLON, goal)    { gols } ;
 
 role:
   | id=IDENT { `RoleName id}
@@ -61,7 +74,7 @@ role:
   ;
 
 rolelist:
-  rlist = separated_list(PERIOD, RNAME)    { rlist } ;
+  rlist = separated_nonempty_list(PERIOD, role)    { rlist } ;
 
 actions:
   | ACTIONS; actlist= action;  { actlist };
