@@ -50,6 +50,7 @@ rule read =
   | '<' {LEFT_ANGLEBARCK}
   | '>' {RIGHT_ANGLEBARCK}
   | 'h' {HASHCON}
+  | "nounce" {NOUNCE}
   | "aenc" {AENC}
   | "senc" {SENC}
   | "Actions:" {ACTIONS}

@@ -15,6 +15,7 @@
 %token K
 %token LEFT_ANGLEBARCK
 %token RIGHT_ANGLEBARCK
+%token NOUNCE
 %token HASHCON
 %token AENC
 %token SENC
@@ -86,7 +87,8 @@ action_list:
    acts = separated_list(SEMICOLON, action)    { acts } ;
 
 message: 
-  | id=IDENT { `Var id}
+  | id=IDENT { `Str id}
+  | NOUNCE;LEFT_BRACK;id=IDENT;RIGHT_BRACK {`Var id }
   (*| v1=message;PERIOD;v2=message{ `Concat (v1,v2)}*)
   | PK;LEFT_BRACK;rlnm=IDENT;RIGHT_BRACK { `Pk rlnm }
   | SK;LEFT_BRACK;rlnm=IDENT;RIGHT_BRACK { `Sk rlnm }
