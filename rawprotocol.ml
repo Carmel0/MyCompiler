@@ -44,10 +44,29 @@ type pocolcontext =[
 type protocols = [
   | `Protocol of label*pocolcontext
   | `Null
-]
+];;
+type sign = 
+  | Plus
+  | Minus ;;
+type act = sign * message ;;
+
+
 
 (* part 1 *)
 open Core.Std
+
+let compileAct (seq,r1,r2,n,m) roleName = 
+  if roleName=r1 then Some (Plus,m)
+  else if roleName=r2 then Some (Minus,m)
+  else None
+
+(* let compileAct (seq,r1,r2,n,m) roleName = 
+  match roleName with
+  | r1 -> Some (Plus,m)
+  | r2 -> Some (Minus,m)
+  | _ -> None *)
+
+
 let rec output_role outc = function
   | `RoleName role -> printf "role:%s" role
   | `roleName_list arr -> print_rolelist outc arr
@@ -64,7 +83,7 @@ let rec head_message outc= function
   | `Var id ->printf "N%s:NonceType;" id
   | `Str str ->printf "%s:AgentIdType;" str
   | `Concat arr -> print_headmsglist outc arr
-  | `Aenc (ms1,ms2) -> head_message outc ms1;head_message outc ms2
+  | `Aenc(ms1,ms2) -> head_message outc ms1;head_message outc ms2
   | `Senc (ms1,ms2) ->  head_message outc ms1;head_message outc ms2
   | `Hash msg -> head_message outc msg
   | `Pk rolename ->printf "%s:AgentIdType;" rolename
@@ -193,8 +212,11 @@ procedure destruct_%s(msg:Message; Var %a);
 let rec output_action outc = function
   | `Null       -> output_string outc "null"
   | `Actlist arr  -> print_actionlist outc arr
-  | `Act (seq,r1,r2,n,m) -> cons_message outc seq m;
-  destruct_message outc seq m
+  | `Act (seq,r1,r2,n,m) ->
+  match compileAct (seq,r1,r2,n,m) "A" with
+    | Some (Plus,m) -> printf "(+)"
+    | Some (Minus,m) -> printf "(-)"
+    | None -> printf "Empty"
 
 and print_actionlist outc arr = 
   output_string outc "Actions{\n";
@@ -235,6 +257,7 @@ let output_pocolcontext outc = function
   | `Null       -> output_string outc "null"
   | `Pocol (k,a,g)-> printf "%a\n----\n%a\n----\n%a" output_knowledge k output_action a output_goal g
 
+  
 let output_pocol outc = function
   | `Null       -> output_string outc "null"
   | `Protocol (n,p)  -> printf "Protocol %s:\n----\n%a\n END" n output_pocolcontext p
